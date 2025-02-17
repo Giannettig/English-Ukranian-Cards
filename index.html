@@ -212,6 +212,27 @@
             transition: all 0.2s;
         }
 
+        /* Add mobile-specific button styles */
+        @media (max-width: 768px) {
+            .btn {
+                min-width: 120px;
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .btn i {
+                font-size: 0.9rem;
+            }
+            
+            .button-group {
+                gap: 0.75rem;
+            }
+            
+            .controls-container {
+                padding: 1rem 0.75rem;
+            }
+        }
+
         .btn:active {
             transform: scale(0.95);
         }
