@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Valeria's cards of knowledge</title>
+    <title>Little cards of knowledge</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -197,11 +198,12 @@
             display: flex;
             gap: 1rem;
             justify-content: center;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            align-items: center;
         }
 
-        .btn {
-            min-width: 120px;
+        .btn, #lessonSelect {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -210,6 +212,7 @@
             border-radius: 8px;
             font-weight: 500;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
         .btn:active {
@@ -281,12 +284,13 @@
         @media (max-width: 768px) {
             .button-group {
                 gap: 0.5rem;
+                width: 100%;
             }
 
-            .btn {
-                min-width: auto;
-                padding: 0.75rem 1rem;
+            .btn, #lessonSelect {
+                padding: 0.75rem 0.5rem;
                 font-size: 0.9rem;
+                min-width: 0;
             }
 
             .btn i {
@@ -297,14 +301,43 @@
                 white-space: nowrap;
             }
         }
+
+        #lessonSelect {
+            min-width: auto;
+            border: 2px solid #d23f77;
+            color: #d23f77;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            background-color: transparent;
+            transition: all 0.2s;
+        }
+
+        #lessonSelect:focus {
+            box-shadow: 0 0 0 0.25rem rgba(210, 63, 119, 0.25);
+            border-color: #d23f77;
+        }
+
+        #lessonSelect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(210, 63, 119, 0.2);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="text-center mb-4">
-            <h1>Valeria's cards of knowledge</h1>
+            <h1>Little cards of knowledge</h1>
             <div class="controls-container">
                 <div class="button-group">
+                    <select id="lessonSelect" class="form-select">
+                        <option value="1">Lesson 1</option>
+                        <option value="2">Lesson 2</option>
+                    </select>
                     <button id="refreshCards" class="btn btn-primary">
                         <i class="fas fa-random me-2"></i>New Set
                     </button>
@@ -328,14 +361,14 @@
                 this.words = [];
                 this.currentSet = [];
                 this.firstLanguage = 'ukrainian';
+                this.flippedCards = new Set();
+                this.currentLesson = '1';
                 
                 this.init();
-                // Add resize handler
                 this.handleResize = this.handleResize.bind(this);
                 window.addEventListener('resize', this.debounce(this.handleResize, 250));
             }
 
-            // Add debounce function to prevent too many resize events
             debounce(func, wait) {
                 let timeout;
                 return function executedFunction(...args) {
@@ -369,118 +402,118 @@
 
             async loadCSV() {
                 // Embed CSV data directly
-                const csvData = `English Word/Phrase,Ukrainian Translation
-undermine confidence,підірвати впевненість
-due to the lack of focus,через нестачу зосередженості
-coincide,"збігатися, бути однаковим"
-information fatigue,інформаційна втома
-convey,"передати, виражати"
-convey the message,передати повідомлення
-encounter,"зустріти, стикнутися"
-to pinpoint,"точно визначити, з'ясувати"
-to reference this feeling,посилатися на це почуття
-input,"вводити, вхідні дані"
-to be bogged down,загрузнути
-to process,"обробляти, опрацьовувати правду"
-harmless,нешкідливий
-absorb,"поглинати, вбирати"
-we are able to access information,ми можемо отримати доступ до інформації
-constantly,"безперервно, постійно"
-destructive,"руйнівний, шкідливий"
-ponder,"замислюватися, міркувати"
-zap you out,вивести тебе
-four-letter word,лайливе слово
-colossal implications,колосальні наслідки
-to outline,"окреслювати, основні риси"
-sustainability,стійкість
-ethics,етика
-curriculum,"курс навчання, розклад"
-to carve out,вирізати
-alongside,"поруч, пліч-о-пліч"
-to thrive,"процвітати, розвиватися"
-key enablers,ключові активатори
-to accelerate,"прискорювати, розганяти"
-self-paced,самостійний темп
-self-directed,самокерований
-span,"інтервал, перекривати"
-tension span,напружений інтервал
-bite-sized,"маленький, зручний"
-augment reality,доповнена реальність
-pursue,"переслідувати, продовжувати"
-to enhance,"збільшувати, покращувати"
-to cultivate,"вирощувати, обробляти"
-an exam,іспит
-pursuing,"переслідування, прагнення"
-retrieve,"повернути собі, отримати"
-to discard,"відкидати, відмовлятися"
-to retain,"залишати, зберігати"
-sharp mind,гострий розум
-memory retention,утримання пам'яті
-consistently,послідовно
-consolidate,"зміцнювати, об'єднувати"
-proper hydration,правильне зволоження
-retrieve,"отримати, повернути собі"
-encode,"кодувати, шифрувати"
-repetition,повторення
-mnemonic,мнемонічний
-lyrics,тексти пісень
-chunking,подрібнення
-chunk,"шматок, порція"
-to space out,"віддалити, розподілити"
-cramming,"зубріння, напихання"
-reinforce,"зміцнювати, підкріплювати"
-retention,"утримання, збереження"
-retrieval,"пошук, відновлення"
-get to,мати можливість зробити щось
-ease stress levels,знизити рівень стресу
-strengthen,зміцнити
-work at its best,працювати найкраще
-take advantage of technology,використовувати технології
-reinforce learning,підкріпити навчання
-commit it to memory,запам'ятати
-recall,згадати
-retain/memorize,зберігати інформацію
-retention ability,здатність запам'ятовувати
-pursuing a dream,переслідування мрії
-pursuit,прагнення
-space repetition,інтервальне повторення
-remind,нагадувати
-speaking of me,говорячи про мене
-as for me,що стосується мене
-take advantage of,скористатися
-pursue,переслідувати
-enhance,покращувати
-beauty at its best,краса в найкращому вигляді
-cultivate,культивувати
-reinforce,зміцнювати
-conscious,свідомий
-decision,рішення
-effort,зусилля
-behaviour,поведінка
-thinking,мислення
-choice,вибір
-recall,"згадувати (слова, моменти, дату)"
-scientists say,вчені кажуть
-cultivating responsibility,виховання відповідальності
-environment,довкілля
-necessary skill,необхідна навичка
-modern world,сучасний світ
-not satisfied,не задоволені
-pursuing career,переслідування кар'єри
-open-minded people,відкриті люди
-creativity at its best,креативність на найвищому рівні
-kindness at its best,доброта на найвищому рівні
-self-love,любов до себе
-to retain facts easily,легко запам'ятовувати факти
-retain,"зберігати, утримувати"
-dignity,гідність
-Valera's ;-), Хто найкращий чоловік у світі?
-throughout,протягом
-performance,виступ
-learning English,вивчення англійської
-memorizing things,запам'ятовування речей
-precision,точність
-approach,"наближення, підхід, переговори"`;
+                const csvData = `English Word/Phrase,Ukrainian Translation,Lesson
+                undermine confidence,підірвати впевненість,1
+                due to the lack of focus,через нестачу зосередженості,1
+                coincide,"збігатися, бути однаковим",1
+                information fatigue,інформаційна втома,1
+                convey,"передати, виражати",1
+                convey the message,передати повідомлення,1
+                encounter,"зустріти, стикнутися",1
+                to pinpoint,"точно визначити, з'ясувати",1
+                to reference this feeling,посилатися на це почуття,1
+                input,"вводити, вхідні дані",1
+                to be bogged down,загрузнути,1
+                to process,"обробляти, опрацьовувати правду",1
+                harmless,нешкідливий,1
+                absorb,"поглинати, вбирати",1
+                we are able to access information,ми можемо отримати доступ до інформації,1
+                constantly,"безперервно, постійно",1
+                destructive,"руйнівний, шкідливий",1
+                ponder,"замислюватися, міркувати",1
+                zap you out,вивести тебе,1
+                four-letter word,лайливе слово,1
+                colossal implications,колосальні наслідки,1
+                to outline,"окреслювати, основні риси",1
+                sustainability,стійкість,1
+                ethics,етика,1
+                curriculum,"курс навчання, розклад",1
+                to carve out,вирізати,2
+                alongside,"поруч, пліч-о-пліч",2
+                to thrive,"процвітати, розвиватися",2
+                key enablers,ключові активатори,2
+                to accelerate,"прискорювати, розганяти",2
+                self-paced,самостійний темп,2
+                self-directed,самокерований,2
+                span,"інтервал, перекривати",2
+                tension span,напружений інтервал,2
+                bite-sized,"маленький, зручний",2
+                augment reality,доповнена реальність,2
+                pursue,"переслідувати, продовжувати",2
+                to enhance,"збільшувати, покращувати",2
+                to cultivate,"вирощувати, обробляти",2
+                an exam,іспит,2
+                pursuing,"переслідування, прагнення",2
+                retrieve,"повернути собі, отримати",2
+                to discard,"відкидати, відмовлятися",2
+                to retain,"залишати, зберігати",2
+                sharp mind,гострий розум,2
+                memory retention,утримання пам'яті,2
+                consistently,послідовно,2
+                consolidate,"зміцнювати, об'єднувати",2
+                proper hydration,правильне зволоження,2
+                retrieve,"отримати, повернути собі",2
+                encode,"кодувати, шифрувати",2
+                repetition,повторення,2
+                mnemonic,мнемонічний,2
+                lyrics,тексти пісень,2
+                chunking,подрібнення,2
+                chunk,"шматок, порція",2
+                to space out,"віддалити, розподілити",2
+                cramming,"зубріння, напихання",2
+                reinforce,"зміцнювати, підкріплювати",2
+                retention,"утримання, збереження",2
+                retrieval,"пошук, відновлення",2
+                get to,мати можливість зробити щось,2
+                ease stress levels,знизити рівень стресу,2
+                strengthen,зміцнити,2
+                work at its best,працювати найкраще,2
+                take advantage of technology,використовувати технології,2
+                reinforce learning,підкріпити навчання,2
+                commit it to memory,запам'ятати,2
+                recall,згадати,2
+                retain/memorize,зберігати інформацію,2
+                retention ability,здатність запам'ятовувати,2
+                pursuing a dream,переслідування мрії,2
+                pursuit,прагнення,2
+                space repetition,інтервальне повторення,2
+                remind,нагадувати,2
+                speaking of me,говорячи про мене,2
+                as for me,що стосується мене,2
+                take advantage of,скористатися,2
+                pursue,переслідувати,2
+                enhance,покращувати,2
+                beauty at its best,краса в найкращому вигляді,2
+                cultivate,культивувати,2
+                reinforce,зміцнювати,2
+                conscious,свідомий,2
+                decision,рішення,2
+                effort,зусилля,2
+                behaviour,поведінка,2
+                thinking,мислення,2
+                choice,вибір,2
+                recall,"згадувати (слова, моменти, дату)",2
+                scientists say,вчені кажуть,2
+                cultivating responsibility,виховання відповідальності,2
+                environment,довкілля,2
+                necessary skill,необхідна навичка,2
+                modern world,сучасний світ,2
+                not satisfied,не задоволені,2
+                pursuing career,переслідування кар'єри,2
+                open-minded people,відкриті люди,2
+                creativity at its best,креативність на найвищому рівні,2
+                kindness at its best,доброта на найвищому рівні,2
+                self-love,любов до себе,2
+                to retain facts easily,легко запам'ятовувати факти,2
+                retain,"зберігати, утримувати",2
+                dignity,гідність,2
+                Valera's ;-), Хто найкращий чоловік у світі?,2
+                throughout,протягом,2
+                performance,виступ,2
+                learning English,вивчення англійської,2
+                memorizing things,запам'ятовування речей,2
+                precision,точність,2
+                approach,"наближення, підхід, переговори"`;
 
                 return new Promise((resolve, reject) => {
                     Papa.parse(csvData, {
@@ -491,10 +524,11 @@ approach,"наближення, підхід, переговори"`;
                             
                             this.words = results.data
                                 .slice(1)
-                                .filter(row => row.length === 2 && row[0] && row[1])
+                                .filter(row => row.length === 3 && row[0] && row[1] && row[2])
                                 .map(row => ({
                                     english: row[0].trim(),
-                                    ukrainian: row[1].trim()
+                                    ukrainian: row[1].trim(),
+                                    lesson: row[2].trim()
                                 }));
                             
                             if (this.words.length === 0) {
@@ -511,6 +545,11 @@ approach,"наближення, підхід, переговори"`;
             }
 
             setupEventListeners() {
+                document.getElementById('lessonSelect').addEventListener('change', (e) => {
+                    this.currentLesson = e.target.value;
+                    this.refreshCards();
+                });
+
                 document.getElementById('toggleLanguage').addEventListener('click', () => {
                     this.firstLanguage = this.firstLanguage === 'english' ? 'ukrainian' : 'english';
                     const indicator = document.getElementById('languageIndicator');
@@ -528,7 +567,9 @@ approach,"наближення, підхід, переговори"`;
                 const isMobile = window.innerWidth < 768;
                 const numberOfCards = isMobile ? 4 : 8;
 
-                const shuffled = [...this.words].sort(() => 0.5 - Math.random());
+                // Filter words by current lesson
+                const lessonWords = this.words.filter(word => word.lesson === this.currentLesson);
+                const shuffled = [...lessonWords].sort(() => 0.5 - Math.random());
                 return shuffled.slice(0, numberOfCards);
             }
 
@@ -554,10 +595,33 @@ approach,"наближення, підхід, переговори"`;
                 return icons[Math.floor(Math.random() * icons.length)];
             }
 
+            celebrateAndRefresh() {
+                // Trigger confetti
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
+                // Wait 1.5 seconds before refreshing
+                setTimeout(() => {
+                    this.refreshCards();
+                    this.flippedCards.clear();
+                }, 1500);
+            }
+
+            checkAllCardsFlipped() {
+                const totalCards = this.currentSet.length;
+                if (this.flippedCards.size === totalCards) {
+                    this.celebrateAndRefresh();
+                }
+            }
+
             refreshCards() {
                 this.currentSet = this.getRandomWords();
                 const container = document.getElementById('flashcardsContainer');
                 container.innerHTML = '';
+                this.flippedCards.clear();
 
                 this.currentSet.forEach((wordPair, index) => {
                     const front = this.firstLanguage === 'english' ? wordPair.english : wordPair.ukrainian;
@@ -585,6 +649,17 @@ approach,"наближення, підхід, переговори"`;
                         e.preventDefault();
                         e.stopPropagation();
                         card.classList.toggle('flipped');
+                        
+                        // Track flipped cards
+                        const index = card.dataset.index;
+                        if (card.classList.contains('flipped')) {
+                            this.flippedCards.add(index);
+                        } else {
+                            this.flippedCards.delete(index);
+                        }
+                        
+                        // Check if all cards are flipped
+                        this.checkAllCardsFlipped();
                     };
 
                     // Use touchend for better response on iOS
