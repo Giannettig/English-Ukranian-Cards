@@ -79,8 +79,7 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: -webkit-transform 0.6s;
-            transition: transform 0.6s;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000);
             transform-style: preserve-3d;
             -webkit-transform-style: preserve-3d;
             -webkit-backface-visibility: hidden;
@@ -280,7 +279,7 @@
 
         /* Add subtle animation to cards */
         .flashcard-inner {
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1.000);
         }
 
         /* Add soft hover effect to buttons */
@@ -345,6 +344,7 @@
                     <select id="lessonSelect" class="form-select">
                         <option value="1">Lesson 1</option>
                         <option value="2">Lesson 2</option>
+                        <option value="3">Lesson 3</option>
                     </select>
                     <button id="refreshCards" class="btn btn-primary">
                         <i class="fas fa-random me-2"></i>New Set
@@ -521,7 +521,83 @@
                 learning English,вивчення англійської,2
                 memorizing things,запам'ятовування речей,2
                 precision,точність,2
-                approach,"наближення, підхід, переговори"`;
+                approach,"наближення, підхід, переговори",2
+                indulge,"насолоджуватися, потурати",3
+                experience firsthand,отримати безпосередній досвід,3
+                reluctant,"неохочий, вимушений",3
+                consistency,"послідовність, сталість",3
+                silver lining,світла сторона,3
+                well-being,"добробут, благополуччя",3
+                maintain well-being,підтримувати добробут,3
+                enhance well-being,покращувати добробут,3
+                improve well-being,поліпшувати добробут,3
+                affect well-being,впливати на добробут,3
+                promote well-being,сприяти добробуту,3
+                boost well-being,підвищувати добробут,3
+                support well-being,підтримувати добробут,3
+                threaten well-being,загрожувати добробуту,3
+                prioritize well-being,надавати пріоритет добробуту,3
+                neglect well-being,ігнорувати добробут,3
+                regain,відновити,3
+                regain focus,відновити концентрацію,3
+                regain power,відновити силу,3
+                regain ability to walk,відновити здатність ходити,3
+                regain flexibility,відновити гнучкість,3
+                regain financial independence,відновити фінансову незалежність,3
+                influx of,приплив,3
+                influx of digital stimulation,приплив цифрових стимулів,3
+                influx of tourists,приплив туристів,3
+                influx of tasks,приплив завдань,3
+                influx of responsibilities,приплив обов'язків,3
+                foster,"сприяти, розвивати",3
+                foster long-term memory,розвивати довготривалу пам'ять,3
+                foster healthy lifestyle,сприяти здоровому способу життя,3
+                foster immune system,укріплювати імунну систему,3
+                foster financial stability,сприяти фінансовій стабільності,3
+                exacerbate,"загострювати, посилювати",3
+                exacerbate the problem,загострювати проблему,3
+                exacerbate panic attack,посилювати панічну атаку,3
+                exacerbate disease,загострювати хворобу,3
+                tackle,"вирішувати, боротися з",3
+                tackle projects,вирішувати проекти,3
+                tackle new opportunities,братися за нові можливості,3
+                tackle life challenges,справлятися з життєвими викликами,3
+                bursts of,сплески,3
+                bursts of information,сплески інформації,3
+                bursts of sun energy,сплески сонячної енергії,3
+                bursts of hope,сплески надії,3
+                willpower,сила волі,3
+                willpower to put the phone down,сила волі відкласти телефон,3
+                willpower to pursue goal,сила волі досягати цілі,3
+                willpower to continue training,сила волі продовжувати тренування,3
+                abundance of,надлишок,3
+                abundance of information,надлишок інформації,3
+                abundance of sugar in food,надлишок цукру в їжі,3
+                sustain,підтримувати,3
+                curb,стримувати,3
+                increase presence,збільшити присутність,3
+                escapism,втеча від реальності,3
+                annual checkup,щорічний медогляд,3
+                apply,застосовувати,3
+                pitch of voice,висота голосу,3
+                non-verbal cues,невербальні знаки,3
+                to strengthen bonds,укріплювати зв'язки,3
+                exacerbate dissension,посилювати розбіжності,3
+                strained relationship,напружені відносини,3
+                cover up boredom,приховувати нудьгу,3
+                stress them out,викликати у них стрес,3
+                boost morale,піднімати моральний дух,3
+                pick out drawbacks,виявляти недоліки,3
+                catch up socially,наздоганяти у соціальному плані,3
+                feel drained,відчувати виснаження,3
+                advantages outweigh drawbacks,переваги переважають недоліки,3
+                boundaries,межі,3
+                take advantage of,використовувати у своїх інтересах,3
+                drifting apart,віддалятися один від одного,3
+                overlook,ігнорувати,3
+                pros,переваги,3
+                cons,недоліки,3
+                to be tired out,бути виснаженим,3`;
 
                 return new Promise((resolve, reject) => {
                     Papa.parse(csvData, {
